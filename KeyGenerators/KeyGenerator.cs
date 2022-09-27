@@ -8,36 +8,30 @@ namespace SubstitutionCipher
         English = 26,
         Russian = 33,
     }
-}
 
-namespace SubstitutionCipher.KeyGenerators
-{
-    public abstract class KeyGenerator
+    namespace KeyGenerators
     {
-        public abstract Language language { get; }
-        public abstract List<char> Alphabet();
-        public string RandomKey()
+        public abstract class KeyGenerator
         {
-            var alphabet = Alphabet();
-            var random = new Random();
-            for (int i = 0; i < alphabet.Count - 1; i++)
+            public abstract Language language { get; }
+            public abstract List<char> Alphabet();
+            public string RandomKey()
             {
-                int pos = random.Next(i, alphabet.Count);
-                (alphabet[i], alphabet[pos]) = (alphabet[pos], alphabet[i]);
+                var alphabet = Alphabet();
+                var random = new Random();
+                for (int i = 0; i < alphabet.Count - 1; i++)
+                {
+                    int pos = random.Next(i, alphabet.Count);
+                    (alphabet[i], alphabet[pos]) = (alphabet[pos], alphabet[i]);
+                }
+                return new string(alphabet.ToArray());
             }
-            return new string(alphabet.ToArray());
-        }
-        public void CreateKey(string fileName)
-        {
-            string russianKey = RandomKey();
-            FileManager.Write(fileName, russianKey);
-        }
-        public static KeyGenerator KeyGeneratorForLanguage(Language language) =>
-            language switch
+            public void CreateKey(string fileName)
             {
-                Language.Russian => new RussianKeyGenerator(),
-                Language.English => new EnglishKeyGenerator(),
-                _ => throw new Exception($"KeyGenerator for {Enum.GetName(typeof(Language), language)} language is not supported"),
-            };
+                string russianKey = RandomKey();
+                FileManager.Write(fileName, russianKey);
+            }
+
+        }
     }
 }

@@ -5,7 +5,7 @@ using SubstitutionCipher.Managers;
 
 namespace SubstitutionCipher.Coders
 {
-    public class CryptoDecoder
+    public sealed class CryptoDecoder
     {
         private bool _haveKey { get; set; }
         private Dictionary<char, char> _decoder { get; set; }
@@ -54,7 +54,7 @@ namespace SubstitutionCipher.Coders
             {
                 throw new ArgumentException("Key is invalid");
             }
-            var values = KeyGenerator.KeyGeneratorForLanguage(_language).Alphabet();
+            var values = KeyGeneratorFactory.KeyGeneratorForLanguage(_language).Alphabet();
             _decoder = keys
                 .Zip(values, (k, v) => new { k, v })
                 .ToDictionary(x => x.k, x => x.v);

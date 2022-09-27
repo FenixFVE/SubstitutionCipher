@@ -18,7 +18,7 @@ namespace SubstitutionCipher.Coders
             {
                 throw new ArgumentException("Key is invalid");
             }
-            var keys = KeyGenerator.KeyGeneratorForLanguage(_language).Alphabet();
+            var keys = KeyGeneratorFactory.KeyGeneratorForLanguage(_language).Alphabet();
             _encoder = keys
                 .Zip(values, (k, v) => new { k, v })
                 .ToDictionary(x => x.k, x => x.v);
