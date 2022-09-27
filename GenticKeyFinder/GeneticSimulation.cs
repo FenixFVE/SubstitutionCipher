@@ -11,7 +11,7 @@ namespace SubstitutionCipher.GenticKeyFinder
         private readonly Language _language;
         private readonly List<char> _alphabet;
         private readonly int _nGrammLength;
-        private readonly ConcurrentDictionary<char[], int> _nGrammPositions;
+        private readonly ConcurrentDictionary<string, int> _nGrammPositions;
         private readonly string _referenceText;
         private readonly string _encodedText;
         private readonly double[] _referenceFrequencies;
@@ -35,7 +35,7 @@ namespace SubstitutionCipher.GenticKeyFinder
             }
         }
 
-        public static ConcurrentDictionary<char[], int> InitializeNGrammPositions(List<char> alphabet, int nGrammLength) 
+        public static ConcurrentDictionary<string, int> InitializeNGrammPositions(List<char> alphabet, int nGrammLength) 
         {
             var dictionarySize = (int)Math.Pow(alphabet.Count, nGrammLength);
             var keys = new List<char[]>(dictionarySize);
@@ -62,15 +62,15 @@ namespace SubstitutionCipher.GenticKeyFinder
                 }
             }
 
-            var dictionary = new ConcurrentDictionary<char[], int>();
+            var dictionary = new ConcurrentDictionary<string, int>();
             for (int i = 0; i < dictionarySize; i++)
             {
-                dictionary.TryAdd(keys[i], i);
+                dictionary.TryAdd(new string(keys[i]), i);
             }
             return dictionary;
         }
 
-        public static double[] ComputeFrequencies(string formatedText, int nGrammLength, ConcurrentDictionary<char[], int> positions)
+        public static double[] ComputeFrequencies(string formatedText, int nGrammLength, ConcurrentDictionary<string, int> positions)
         {
             var frequencies = new double[positions.Count];
             var qu = new Queue<char>(nGrammLength);
@@ -83,7 +83,7 @@ namespace SubstitutionCipher.GenticKeyFinder
             {
                 qu.Enqueue(formatedText[i]);
                 //Console.WriteLine(positions.Count);
-                var position = positions[qu.ToArray()];
+                var position = positions[new string(qu.ToArray())];
                 qu.Dequeue();
                 frequencies[position]++;
             }
@@ -101,7 +101,7 @@ namespace SubstitutionCipher.GenticKeyFinder
         public string RunSimulation(double precision)
         {
             int counter = 0;
-            var rand = new Random();
+            
 
             while(true)
             {
@@ -119,15 +119,15 @@ namespace SubstitutionCipher.GenticKeyFinder
                 if (best <= precision) break; // EXIT
 
                 int half = _phenotypes.Count / 2;
-                for (int i = 0; i < half; i++)
-                {
+                Parallel.For(0, half, i => {
+                    var rand = new Random();
                     var genotype = _phenotypes[i].Genotype;
                     int t1 = rand.Next(0, (int)_language);
                     int t2 = rand.Next(0, (int)_language);
                     var strBuilder = new StringBuilder(genotype);
-                    (strBuilder[t1], strBuilder[t2]) = (strBuilder[t2], strBuilder[t1]); 
+                    (strBuilder[t1], strBuilder[t2]) = (strBuilder[t2], strBuilder[t1]);
                     _phenotypes[i + half].Genotype = strBuilder.ToString();
-                }
+                });
             }
 
             return _phenotypes[0].Genotype;

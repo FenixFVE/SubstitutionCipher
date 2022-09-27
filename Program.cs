@@ -26,12 +26,12 @@ if (false)
     decoder.DecodeFile(@".\Data\encoded_text.txt", @".\Data\decoded_text.txt");
 }
 
-if (false)
+if (true)
 {
     var lanugage = Language.Russian;
-    int nGrammLength = 2;
-    int simualationSize = 100;
-    double pressision = 0.000_000_1;
+    int nGrammLength = 3;
+    int simualationSize = 200;
+    double pressision = 0.000_01;
 
     var key = FileManager.Read(@".\Data\key.txt");
     Console.WriteLine($"key = '{key}'");
@@ -47,20 +47,4 @@ if (false)
 
     Console.WriteLine($"key = '{key}'");
     Console.WriteLine($"finded_key = '{findedKey}'");
-}
-
-if (true)
-{
-    var dictionary = new ConcurrentDictionary<char[], int>();
-    var key = new char[] { 'A', 'B' };
-    var value = 8;
-    dictionary.TryAdd(key, value);
-
-    Console.WriteLine(dictionary[key]);
-
-    var qu = new Queue<char>();
-    qu.Enqueue('A');
-    qu.Enqueue('B');
-
-    Console.WriteLine(dictionary[qu.ToArray()]);
 }

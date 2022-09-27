@@ -11,7 +11,7 @@ namespace SubstitutionCipher.GenticKeyFinder
         private readonly List<char> _alphabet;
         private readonly string _encodedText;
         private readonly int _nGrammLength;
-        private readonly ConcurrentDictionary<char[], int> _nGrammPositions;
+        private readonly ConcurrentDictionary<string, int> _nGrammPositions;
         private readonly double[] _referenceNGrammFrequencies;
 
         private double[] _nGrammFrequencies; 
@@ -44,7 +44,7 @@ namespace SubstitutionCipher.GenticKeyFinder
 
         public Phenotype(
             Language language, int nGrammLength, string encodedText,
-            ConcurrentDictionary<char[], int> nGrammPositions,
+            ConcurrentDictionary<string, int> nGrammPositions,
             double[] referenceNGrammFrequencies,
             List<char> alphabet)
         {
@@ -76,11 +76,11 @@ namespace SubstitutionCipher.GenticKeyFinder
             {
                 qu.Enqueue(_decoder[_encodedText[i]]);
             }
-
+            
             for (int i = _nGrammLength - 1; i < _encodedText.Length; i++)
             {
                 qu.Enqueue(_decoder[_encodedText[i]]);
-                var position = _nGrammPositions[qu.ToArray()];
+                var position = _nGrammPositions[new string(qu.ToArray())];
                 qu.Dequeue();
                 _nGrammFrequencies[position]++;
             }
